@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Examen - LPIC-2</title>
+    <!-- Carga de la lista de preguntas sin necesidad de servidor -->
+    <script src="preguntas.js"></script>
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary-color: #764ba2;
+            --background-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --progress-gradient: linear-gradient(90deg, #10b981 0%, #06d6a0 100%);
+            --container-bg: #ffffff;
+            --text-color: #333333;
+            --muted-text: #666666;
+            --border-color: #e9ecef;
+            --light-bg: #f8f9fa;
+            --code-bg: #2d3748;
+            --code-text: #a7f3d0;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #e67e22;
+            --option-hover: #e9ecef;
+            --selected-bg: #e3f2fd;
+            --selected-border: #2196f3;
+            --justification-bg: #fff3cd;
+            --justification-border: #ffeaa7;
+            --justification-text: #856404;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #a855f7;
+            --primary-dark: #9333ea;
+            --secondary-color: #1e293b;
+            --background-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --progress-gradient: linear-gradient(90deg, #06d6a0 0%, #00f5ff 100%);
+            --container-bg: #1e293b;
+            --text-color: #f1f5f9;
+            --muted-text: #94a3b8;
+            --border-color: #334155;
+            --light-bg: #334155;
+            --code-bg: #1a1f2e;
+            --code-text: #a7f3d0;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --option-hover: #475569;
+            --selected-bg: #1e40af;
+            --selected-border: #3b82f6;
+            --justification-bg: #374151;
+            --justification-border: #6b7280;
+            --justification-text: #d1d5db;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--background-gradient);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--container-bg);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            background: var(--background-gradient);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            backdrop-filter: blur(10px);
+        }
+
+        .timer {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .lobby-panel {
+            background: var(--light-bg);
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .lobby-panel label {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .lobby-select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--container-bg);
+            color: var(--text-color);
+            font-size: 0.95em;
+            cursor: pointer;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: var(--light-bg);
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            color: var(--muted-text);
+            font-size: 0.9em;
+        }
+
+        .navigation-panel {
+            background: var(--light-bg);
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .navigation-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .question-navigation {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            gap: 8px;
+        }
+
+        .nav-question-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border-color);
+            background: var(--container-bg);
+            color: var(--text-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nav-question-btn.current {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .nav-question-btn.answered {
+            background: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        .nav-question-btn.unanswered {
+            background: var(--container-bg);
+            color: var(--muted-text);
+        }
+
+        .question-container {
+            padding: 30px;
+            background: var(--container-bg);
+        }
+
+        .question-number {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            background: var(--light-bg);
+            color: var(--text-color);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .options {
+            margin-bottom: 25px;
+        }
+
+        .option {
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: var(--selected-bg);
+            border-color: var(--selected-border);
+            color: white;
+        }
+
+        .option-letter {
+            background: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 30px;
+            background: var(--light-bg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .results-container {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .score {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .score.excellent {
+            color: var(--success-color);
+        }
+
+        .score.good {
+            color: var(--warning-color);
+        }
+
+        .score.poor {
+            color: var(--danger-color);
+        }
+
+        .failed-questions {
+            text-align: left;
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .failed-question {
+            background: var(--container-bg);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border-color);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--progress-gradient);
+            transition: width 0.3s ease;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle">🌙 Modo Oscuro</button>
+            <div class="timer" id="timer">00:45:00</div>
+            <h1>📚 Test LPIC-2 (Examen 201)</h1>
+            <p>ASORC - Plataforma de Tests</p>
+        </div>
+
+        <div class="lobby-panel">
+            <div>
+                <label for="topic-select">🎯 Modo de Estudio / Tema:</label>
+                <select id="topic-select" class="lobby-select" onchange="changeTopicFilter()">
+                    <option value="all">Todos los Temas (Aleatorio)</option>
+                    <option value="1">Tema 1: Starting a System</option>
+                    <option value="2">Tema 2: Maintaining the System</option>
+                </select>
+            </div>
+            <button class="btn btn-secondary" onclick="restartTest()">🔀 Reiniciar con Nuevo Filtro</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="answered-count">0</div>
+                <div class="stat-label">Contestadas</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="unanswered-count">0</div>
+                <div class="stat-label">Sin contestar</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="total-count">0</div>
+                <div class="stat-label">Total</div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <div class="navigation-panel">
+            <div class="navigation-title">🧭 Navegación por preguntas</div>
+            <div class="question-navigation" id="question-navigation"></div>
+        </div>
+
+        <div id="question-view">
+            <div class="question-container">
+                <div class="question-number" id="question-number">Pregunta 1</div>
+                <div class="question-text" id="question-text">Cargando preguntas...</div>
+                <div class="options" id="options-container"></div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-secondary" id="prev-btn">⬅️ Anterior</button>
+                <button class="btn btn-warning" id="deselect-btn" onclick="deselectOption()">🗑️ Quitar
+                    Selección</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" id="next-btn">➡️ Siguiente</button>
+                    <button class="btn btn-danger" id="finish-btn">🏁 Finalizar Test</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="results-view" class="hidden">
+            <div class="results-container">
+                <h2>🎯 Resultados del Test</h2>
+                <div class="score" id="final-score"></div>
+                <p id="score-message"></p>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="final-correct">0</div>
+                        <div class="stat-label">Correctas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="final-incorrect">0</div>
+                        <div class="stat-label">Incorrectas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="final-unanswered">0</div>
+                        <div class="stat-label">Sin contestar</div>
+                    </div>
+                </div>
+                <div id="failed-questions-container" class="failed-questions hidden">
+                    <h3>❌ Preguntas Incorrectas</h3>
+                    <div id="failed-questions-list"></div>
+                </div>
+                <button class="btn btn-primary" onclick="restartTest()">🔄 Reiniciar Test</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let shuffledQuestions = [];
+        let timeRemaining = 45 * 60;
+        let timerInterval;
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function filterQuestionsByTopic() {
+            const selectedTopic = document.getElementById('topic-select').value;
+            if (selectedTopic === 'all') return questions;
+            return questions.filter(q => q.tema === parseInt(selectedTopic));
+        }
+
+        function initializeTest() {
+            if (typeof questions === 'undefined' || questions.length === 0) {
+                document.getElementById('question-text').innerText = 'Error: No se encontró el archivo preguntas.js en el mismo directorio.';
+                return;
+            }
+
+            const filteredQuestions = filterQuestionsByTopic();
+            if (!filteredQuestions || filteredQuestions.length === 0) return;
+
+            shuffledQuestions = shuffleArray(filteredQuestions);
+            currentQuestion = 0;
+            userAnswers = new Array(shuffledQuestions.length).fill(null);
+            timeRemaining = 45 * 60;
+
+            startTimer();
+            createQuestionNavigation();
+            displayQuestion();
+            updateStats();
+            updateProgress();
+        }
+
+        function changeTopicFilter() { restartTest(); }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    finishExam();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function createQuestionNavigation() {
+            const navContainer = document.getElementById('question-navigation');
+            navContainer.innerHTML = '';
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                const navButton = document.createElement('button');
+                navButton.className = 'nav-question-btn';
+                navButton.textContent = i + 1;
+                navButton.onclick = () => goToQuestion(i);
+                navButton.id = `nav-btn-${i}`;
+                navContainer.appendChild(navButton);
+            }
+            updateNavigationButtons();
+        }
+
+        function updateNavigationButtons() {
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                const btn = document.getElementById(`nav-btn-${i}`);
+                if (!btn) continue;
+                btn.classList.remove('current', 'answered', 'unanswered');
+                if (i === currentQuestion) btn.classList.add('current');
+                else if (userAnswers[i] !== null) btn.classList.add('answered');
+                else btn.classList.add('unanswered');
+            }
+        }
+
+        function goToQuestion(questionIndex) {
+            currentQuestion = questionIndex;
+            displayQuestion();
+            updateProgress();
+            updateNavigationButtons();
+        }
+
+        function displayQuestion() {
+            const question = shuffledQuestions[currentQuestion];
+            document.getElementById('question-number').textContent = `Pregunta ${currentQuestion + 1} de ${shuffledQuestions.length} (Tema ${question.tema})`;
+            document.getElementById('question-text').innerHTML = question.text;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.onclick = () => selectOption(index);
+                optionDiv.innerHTML = `<div class="option-letter">${String.fromCharCode(97 + index)}</div><div>${option}</div>`;
+                if (userAnswers[currentQuestion] === index) optionDiv.classList.add('selected');
+                optionsContainer.appendChild(optionDiv);
+            });
+
+            updateNavigationButtons();
+        }
+
+        function selectOption(index) {
+            userAnswers[currentQuestion] = index;
+            displayQuestion();
+            updateStats();
+        }
+
+        function deselectOption() {
+            userAnswers[currentQuestion] = null;
+            displayQuestion();
+            updateStats();
+        }
+
+        function updateStats() {
+            const answeredCount = userAnswers.filter(answer => answer !== null).length;
+            document.getElementById('answered-count').textContent = answeredCount;
+            document.getElementById('total-count').textContent = shuffledQuestions.length;
+            document.getElementById('unanswered-count').textContent = shuffledQuestions.length - answeredCount;
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / shuffledQuestions.length) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+        }
+
+        function finishExam() {
+            clearInterval(timerInterval);
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let unansweredCount = 0;
+
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                if (userAnswers[i] === null) unansweredCount++;
+                else if (userAnswers[i] === shuffledQuestions[i].correct) correctCount++;
+                else incorrectCount++;
+            }
+
+            const rawScore = correctCount - (incorrectCount / 3);
+            const finalScore = Math.max(0, (rawScore * 10) / shuffledQuestions.length);
+            const scoreRounded = Math.round(finalScore * 100) / 100;
+
+            document.getElementById('question-view').classList.add('hidden');
+            document.getElementById('results-view').classList.remove('hidden');
+
+            document.getElementById('final-correct').textContent = correctCount;
+            document.getElementById('final-incorrect').textContent = incorrectCount;
+            document.getElementById('final-unanswered').textContent = unansweredCount;
+            document.getElementById('final-score').textContent = scoreRounded + '/10';
+
+            showFailedQuestions();
+        }
+
+        function showFailedQuestions() {
+            const failedQuestions = [];
+            for (let i = 0; i < shuffledQuestions.length; i++) {
+                if (userAnswers[i] !== null && userAnswers[i] !== shuffledQuestions[i].correct) {
+                    failedQuestions.push({
+                        number: i + 1,
+                        question: shuffledQuestions[i],
+                        userAnswer: userAnswers[i]
+                    });
+                }
+            }
+
+            if (failedQuestions.length > 0) {
+                document.getElementById('failed-questions-container').classList.remove('hidden');
+                const listContainer = document.getElementById('failed-questions-list');
+                listContainer.innerHTML = failedQuestions.map(failed => `
+                    <div class="failed-question">
+                        <h4>Pregunta ${failed.number} (Tema ${failed.question.tema})</h4>
+                        <p><strong>Enunciado:</strong> ${failed.question.text}</p>
+                        <p><strong>Tu respuesta:</strong> ${String.fromCharCode(97 + failed.userAnswer)}) ${failed.question.options[failed.userAnswer]}</p>
+                        <p><strong>Respuesta correcta:</strong> ${String.fromCharCode(97 + failed.question.correct)}) ${failed.question.options[failed.question.correct]}</p>
+                        <p><strong>Explicación:</strong> ${failed.question.justification}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function restartTest() {
+            document.getElementById('question-view').classList.remove('hidden');
+            document.getElementById('results-view').classList.add('hidden');
+            document.getElementById('failed-questions-container').classList.add('hidden');
+            initializeTest();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTheme();
+            document.getElementById('prev-btn').onclick = () => { if (currentQuestion > 0) goToQuestion(currentQuestion - 1); };
+            document.getElementById('next-btn').onclick = () => { if (currentQuestion < shuffledQuestions.length - 1) goToQuestion(currentQuestion + 1); else finishExam(); };
+            document.getElementById('finish-btn').onclick = finishExam;
+            initializeTest();
+        });
+    </script>
+</body>
+
+</html>
