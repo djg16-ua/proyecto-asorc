@@ -4,11 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test de Examen - LPIC-2</title>
-    <!-- Carga de la lista de preguntas sin necesidad de servidor -->
-    <script src="preguntas.js"></script>
+    <title>Test de Examen - LPIC-2 (ASORC)</title>
+
+    <!-- Cargar índice de temas y archivos de preguntas -->
+    <script src="preguntas/index.js"></script>
+    <script src="preguntas/tema1.js"></script>
+    <script src="preguntas/tema2.js"></script>
+    <!-- Cuando agregues nuevos temas, solo añades sus scripts aquí -->
+
     <style>
         :root {
+            /* Light mode colors */
             --primary-color: #667eea;
             --primary-dark: #5a67d8;
             --secondary-color: #764ba2;
@@ -33,6 +39,7 @@
         }
 
         [data-theme="dark"] {
+            /* Dark mode colors */
             --primary-color: #a855f7;
             --primary-dark: #9333ea;
             --secondary-color: #1e293b;
@@ -106,7 +113,13 @@
             border-radius: 25px;
             cursor: pointer;
             font-size: 1.1em;
+            transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
         }
 
         .timer {
@@ -120,6 +133,7 @@
             font-weight: bold;
         }
 
+        /* Lobby / Selector de Temas */
         .lobby-panel {
             background: var(--light-bg);
             padding: 15px 30px;
@@ -152,6 +166,7 @@
             background: var(--light-bg);
             padding: 20px;
             border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
 
         .stat-item {
@@ -163,6 +178,7 @@
             font-size: 2em;
             font-weight: bold;
             color: var(--primary-color);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         .stat-label {
@@ -174,18 +190,22 @@
             background: var(--light-bg);
             padding: 20px;
             border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
 
         .navigation-title {
             font-weight: bold;
             margin-bottom: 15px;
             color: var(--primary-color);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         .question-navigation {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
             gap: 8px;
+            width: 100%;
+            max-width: none;
         }
 
         .nav-question-btn {
@@ -198,6 +218,11 @@
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s ease;
+        }
+
+        .nav-question-btn:hover {
+            background: var(--option-hover);
+            transform: scale(1.05);
         }
 
         .nav-question-btn.current {
@@ -215,11 +240,20 @@
         .nav-question-btn.unanswered {
             background: var(--container-bg);
             color: var(--muted-text);
+            border-color: var(--border-color);
         }
 
         .question-container {
             padding: 30px;
             background: var(--container-bg);
+            transition: all 0.3s ease;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
         }
 
         .question-number {
@@ -228,8 +262,6 @@
             padding: 10px 20px;
             border-radius: 25px;
             font-weight: bold;
-            display: inline-block;
-            margin-bottom: 20px;
         }
 
         .question-text {
@@ -241,6 +273,22 @@
             padding: 20px;
             border-radius: 10px;
             border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', Monaco, 'Lucida Console', monospace;
+            font-size: 0.9em;
+            margin: 15px 0;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         .options {
@@ -261,6 +309,7 @@
         }
 
         .option:hover {
+            background: var(--option-hover);
             transform: translateX(5px);
         }
 
@@ -284,6 +333,34 @@
             flex-shrink: 0;
         }
 
+        .justification {
+            background: var(--justification-bg);
+            border: 1px solid var(--justification-border);
+            color: var(--justification-text);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        .justification.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .controls {
             display: flex;
             justify-content: space-between;
@@ -291,6 +368,7 @@
             padding: 25px 30px;
             background: var(--light-bg);
             border-top: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
 
         .btn {
@@ -302,6 +380,7 @@
             font-weight: 600;
             transition: all 0.3s ease;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .btn-primary {
@@ -309,9 +388,18 @@
             color: white;
         }
 
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
         .btn-secondary {
             background: #6c757d;
             color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #5a6268;
         }
 
         .btn-danger {
@@ -319,14 +407,40 @@
             color: white;
         }
 
+        .btn-danger:hover:not(:disabled) {
+            background: #c82333;
+        }
+
         .btn-warning {
             background: var(--warning-color);
             color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning:hover:not(:disabled) {
+            background: #d35400;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning.active {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+            background: #d35400;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.6;
         }
 
         .results-container {
             padding: 30px;
             text-align: center;
+            background: var(--container-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
         }
 
         .score {
@@ -353,30 +467,85 @@
             padding: 20px;
             border-radius: 10px;
             margin-top: 20px;
+            transition: all 0.3s ease;
         }
 
         .failed-question {
             background: var(--container-bg);
+            color: var(--text-color);
             padding: 15px;
             margin-bottom: 15px;
             border-radius: 8px;
             border-left: 4px solid var(--danger-color);
+            transition: all 0.3s ease;
         }
 
         .progress-bar {
             width: 100%;
             height: 8px;
             background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
         }
 
         .progress-fill {
             height: 100%;
             background: var(--progress-gradient);
             transition: width 0.3s ease;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
         }
 
         .hidden {
             display: none !important;
+        }
+
+        .disclaimer-footer {
+            margin-top: 30px;
+            padding: 15px 25px;
+            background: var(--light-bg);
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.85em;
+            color: var(--muted-text);
+            transition: all 0.3s ease;
+        }
+
+        .disclaimer-footer strong {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .timer {
+                position: static;
+                margin-top: 10px;
+            }
+
+            .theme-toggle {
+                position: static;
+                margin-bottom: 10px;
+            }
+
+            .lobby-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
         }
     </style>
 </head>
@@ -384,19 +553,20 @@
 <body>
     <div class="container">
         <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle">🌙 Modo Oscuro</button>
+            <button class="theme-toggle" onclick="toggleTheme()" id="theme-toggle">
+                🌙 Modo Oscuro
+            </button>
             <div class="timer" id="timer">00:45:00</div>
             <h1>📚 Test LPIC-2 (Examen 201)</h1>
             <p>ASORC - Plataforma de Tests</p>
         </div>
 
+        <!-- Panel Selector de Temas (Lobby) -->
         <div class="lobby-panel">
             <div>
                 <label for="topic-select">🎯 Modo de Estudio / Tema:</label>
-                <select id="topic-select" class="lobby-select" onchange="changeTopicFilter()">
+                <select id="topic-select" class="lobby-select" onchange="restartTest()">
                     <option value="all">Todos los Temas (Aleatorio)</option>
-                    <option value="1">Tema 1: Starting a System</option>
-                    <option value="2">Tema 2: Maintaining the System</option>
                 </select>
             </div>
             <button class="btn btn-secondary" onclick="restartTest()">🔀 Reiniciar con Nuevo Filtro</button>
@@ -428,15 +598,24 @@
 
         <div id="question-view">
             <div class="question-container">
-                <div class="question-number" id="question-number">Pregunta 1</div>
-                <div class="question-text" id="question-text">Cargando preguntas...</div>
+                <div class="question-header">
+                    <div class="question-number" id="question-number">Pregunta 1</div>
+                </div>
+
+                <div class="question-text" id="question-text"></div>
+
                 <div class="options" id="options-container"></div>
+
+                <div class="justification" id="justification"></div>
             </div>
 
             <div class="controls">
-                <button class="btn btn-secondary" id="prev-btn">⬅️ Anterior</button>
-                <button class="btn btn-warning" id="deselect-btn" onclick="deselectOption()">🗑️ Quitar
-                    Selección</button>
+                <button class="btn btn-secondary" id="prev-btn" style="opacity: 0.4; transform: scale(0.95);">⬅️
+                    Anterior</button>
+                <button class="btn btn-warning" id="deselect-btn" onclick="deselectOption()"
+                    style="opacity: 0.4; transform: scale(0.95);">
+                    🗑️ Quitar Selección
+                </button>
                 <div style="display: flex; gap: 10px;">
                     <button class="btn btn-primary" id="next-btn">➡️ Siguiente</button>
                     <button class="btn btn-danger" id="finish-btn">🏁 Finalizar Test</button>
@@ -449,6 +628,7 @@
                 <h2>🎯 Resultados del Test</h2>
                 <div class="score" id="final-score"></div>
                 <p id="score-message"></p>
+
                 <div class="stats">
                     <div class="stat-item">
                         <div class="stat-number" id="final-correct">0</div>
@@ -463,59 +643,95 @@
                         <div class="stat-label">Sin contestar</div>
                     </div>
                 </div>
+
                 <div id="failed-questions-container" class="failed-questions hidden">
                     <h3>❌ Preguntas Incorrectas</h3>
                     <div id="failed-questions-list"></div>
                 </div>
+
                 <button class="btn btn-primary" onclick="restartTest()">🔄 Reiniciar Test</button>
             </div>
         </div>
+        <!-- Pie de página aclaratorio -->
+        <footer class="disclaimer-footer">
+            <p>⚠️ <strong>Aviso:</strong> Preguntas basadas en el temario oficial de <strong>LPIC-2 (Examen 201)</strong>. Estas
+                preguntas han sido generadas mediante <strong>Inteligencia Artificial</strong> con fines de estudio y
+                autoevaluación, por lo que podrían contener alguna imprecisión o error puntual.</p>
+        </footer>
     </div>
 
     <script>
+        let allQuestions = [];
+        let shuffledQuestions = [];
         let currentQuestion = 0;
         let userAnswers = [];
-        let shuffledQuestions = [];
         let timeRemaining = 45 * 60;
         let timerInterval;
 
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
+
+            const toggleBtn = document.getElementById('theme-toggle');
+            if (newTheme === 'dark') {
+                toggleBtn.innerHTML = '☀️ Modo Claro';
+            } else {
+                toggleBtn.innerHTML = '🌙 Modo Oscuro';
+            }
         }
 
         function initializeTheme() {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
-        }
 
-        function shuffleArray(array) {
-            const arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
+            const toggleBtn = document.getElementById('theme-toggle');
+            if (savedTheme === 'dark') {
+                toggleBtn.innerHTML = '☀️ Modo Claro';
+            } else {
+                toggleBtn.innerHTML = '🌙 Modo Oscuro';
             }
-            return arr;
         }
 
-        function filterQuestionsByTopic() {
-            const selectedTopic = document.getElementById('topic-select').value;
-            if (selectedTopic === 'all') return questions;
-            return questions.filter(q => q.tema === parseInt(selectedTopic));
+        function buildTopicSelect() {
+            const select = document.getElementById('topic-select');
+
+            allQuestions = [];
+            if (typeof preguntasTema1 !== 'undefined') allQuestions.push(...preguntasTema1);
+            if (typeof preguntasTema2 !== 'undefined') allQuestions.push(...preguntasTema2);
+
+            if (typeof temasDisponibles !== 'undefined') {
+                temasDisponibles.forEach(tema => {
+                    const opt = document.createElement('option');
+                    opt.value = tema.id;
+                    opt.textContent = tema.nombre;
+                    select.appendChild(opt);
+                });
+            }
+        }
+
+        function filterQuestions() {
+            const val = document.getElementById('topic-select').value;
+            if (val === 'all') return allQuestions;
+            return allQuestions.filter(q => q.tema === parseInt(val));
+        }
+
+        function shuffleArray(arr) {
+            const array = [...arr];
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
         }
 
         function initializeTest() {
-            if (typeof questions === 'undefined' || questions.length === 0) {
-                document.getElementById('question-text').innerText = 'Error: No se encontró el archivo preguntas.js en el mismo directorio.';
-                return;
-            }
+            const filtered = filterQuestions();
+            if (!filtered || filtered.length === 0) return;
 
-            const filteredQuestions = filterQuestionsByTopic();
-            if (!filteredQuestions || filteredQuestions.length === 0) return;
-
-            shuffledQuestions = shuffleArray(filteredQuestions);
+            shuffledQuestions = shuffleArray(filtered);
             currentQuestion = 0;
             userAnswers = new Array(shuffledQuestions.length).fill(null);
             timeRemaining = 45 * 60;
@@ -527,16 +743,16 @@
             updateProgress();
         }
 
-        function changeTopicFilter() { restartTest(); }
-
         function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
             updateTimerDisplay();
             timerInterval = setInterval(() => {
                 timeRemaining--;
                 updateTimerDisplay();
+
                 if (timeRemaining <= 0) {
                     clearInterval(timerInterval);
+                    alert("⏰ ¡Tiempo agotado! El examen se enviará automáticamente.");
                     finishExam();
                 }
             }, 1000);
@@ -545,20 +761,35 @@
         function updateTimerDisplay() {
             const minutes = Math.floor(timeRemaining / 60);
             const seconds = timeRemaining % 60;
-            document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            const timerElement = document.getElementById('timer');
+            if (timerElement) {
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeRemaining < 300) {
+                    timerElement.style.color = '#dc3545';
+                } else {
+                    timerElement.style.color = 'white';
+                }
+            }
         }
 
         function createQuestionNavigation() {
             const navContainer = document.getElementById('question-navigation');
+            if (!navContainer) return;
+
             navContainer.innerHTML = '';
+
             for (let i = 0; i < shuffledQuestions.length; i++) {
                 const navButton = document.createElement('button');
                 navButton.className = 'nav-question-btn';
                 navButton.textContent = i + 1;
                 navButton.onclick = () => goToQuestion(i);
                 navButton.id = `nav-btn-${i}`;
+
                 navContainer.appendChild(navButton);
             }
+
             updateNavigationButtons();
         }
 
@@ -566,24 +797,35 @@
             for (let i = 0; i < shuffledQuestions.length; i++) {
                 const btn = document.getElementById(`nav-btn-${i}`);
                 if (!btn) continue;
+
                 btn.classList.remove('current', 'answered', 'unanswered');
-                if (i === currentQuestion) btn.classList.add('current');
-                else if (userAnswers[i] !== null) btn.classList.add('answered');
-                else btn.classList.add('unanswered');
+
+                if (i === currentQuestion) {
+                    btn.classList.add('current');
+                } else if (userAnswers[i] !== null) {
+                    btn.classList.add('answered');
+                } else {
+                    btn.classList.add('unanswered');
+                }
             }
         }
 
         function goToQuestion(questionIndex) {
-            currentQuestion = questionIndex;
-            displayQuestion();
-            updateProgress();
-            updateNavigationButtons();
+            if (questionIndex >= 0 && questionIndex < shuffledQuestions.length) {
+                currentQuestion = questionIndex;
+                displayQuestion();
+                updateProgress();
+                updateNavigationButtons();
+            }
         }
 
         function displayQuestion() {
+            if (!shuffledQuestions || shuffledQuestions.length === 0) return;
+
             const question = shuffledQuestions[currentQuestion];
+
             document.getElementById('question-number').textContent = `Pregunta ${currentQuestion + 1} de ${shuffledQuestions.length} (Tema ${question.tema})`;
-            document.getElementById('question-text').innerHTML = question.text;
+            document.getElementById('question-text').innerHTML = formatQuestionText(question.text);
 
             const optionsContainer = document.getElementById('options-container');
             optionsContainer.innerHTML = '';
@@ -592,31 +834,128 @@
                 const optionDiv = document.createElement('div');
                 optionDiv.className = 'option';
                 optionDiv.onclick = () => selectOption(index);
-                optionDiv.innerHTML = `<div class="option-letter">${String.fromCharCode(97 + index)}</div><div>${option}</div>`;
-                if (userAnswers[currentQuestion] === index) optionDiv.classList.add('selected');
+
+                optionDiv.innerHTML = `
+                    <div class="option-letter">${String.fromCharCode(97 + index)}</div>
+                    <div>${option}</div>
+                `;
+
+                if (userAnswers[currentQuestion] === index) {
+                    optionDiv.classList.add('selected');
+                }
+
                 optionsContainer.appendChild(optionDiv);
             });
 
+            updateDeselectButton();
+            document.getElementById('justification').classList.remove('show');
             updateNavigationButtons();
+            updateNavigationControls();
+        }
+
+        function updateNavigationControls() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+
+            if (prevBtn) {
+                if (currentQuestion === 0) {
+                    prevBtn.disabled = true;
+                    prevBtn.style.opacity = '0.4';
+                    prevBtn.style.transform = 'scale(0.95)';
+                } else {
+                    prevBtn.disabled = false;
+                    prevBtn.style.opacity = '1';
+                    prevBtn.style.transform = 'scale(1)';
+                }
+            }
+
+            if (nextBtn) {
+                nextBtn.disabled = false;
+                nextBtn.textContent = currentQuestion === shuffledQuestions.length - 1 ? '🏁 Finalizar' : '➡️ Siguiente';
+            }
+        }
+
+        function formatQuestionText(text) {
+            const parts = text.split(/(```[\s\S]*?```)/);
+
+            return parts.map(part => {
+                if (part.startsWith('```')) {
+                    let code = part;
+                    if (code.startsWith('```c\n') || code.startsWith('```bash\n')) {
+                        code = code.replace(/```(c|bash)\n/, '').replace(/\n```$/, '');
+                    } else {
+                        code = code.replace(/```/, '').replace(/```$/, '');
+                    }
+                    return `<pre class="code-block">${code}</pre>`;
+                } else {
+                    return part.replace(/\n/g, '<br>');
+                }
+            }).join('');
         }
 
         function selectOption(index) {
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            document.querySelectorAll('.option')[index].classList.add('selected');
             userAnswers[currentQuestion] = index;
-            displayQuestion();
+
+            updateDeselectButton();
             updateStats();
+            updateNavigationButtons();
         }
 
         function deselectOption() {
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
             userAnswers[currentQuestion] = null;
-            displayQuestion();
+
+            updateDeselectButton();
             updateStats();
+            updateNavigationButtons();
+        }
+
+        function updateDeselectButton() {
+            const deselectBtn = document.getElementById('deselect-btn');
+            if (userAnswers[currentQuestion] !== null) {
+                deselectBtn.classList.add('active');
+                deselectBtn.style.opacity = '1';
+                deselectBtn.style.transform = 'scale(1)';
+            } else {
+                deselectBtn.classList.remove('active');
+                deselectBtn.style.opacity = '0.4';
+                deselectBtn.style.transform = 'scale(0.95)';
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+                updateProgress();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < shuffledQuestions.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+                updateProgress();
+            } else {
+                finishExam();
+            }
         }
 
         function updateStats() {
             const answeredCount = userAnswers.filter(answer => answer !== null).length;
+            const unansweredCount = shuffledQuestions.length - answeredCount;
+
             document.getElementById('answered-count').textContent = answeredCount;
             document.getElementById('total-count').textContent = shuffledQuestions.length;
-            document.getElementById('unanswered-count').textContent = shuffledQuestions.length - answeredCount;
+            document.getElementById('unanswered-count').textContent = unansweredCount;
         }
 
         function updateProgress() {
@@ -626,14 +965,19 @@
 
         function finishExam() {
             clearInterval(timerInterval);
+
             let correctCount = 0;
             let incorrectCount = 0;
             let unansweredCount = 0;
 
             for (let i = 0; i < shuffledQuestions.length; i++) {
-                if (userAnswers[i] === null) unansweredCount++;
-                else if (userAnswers[i] === shuffledQuestions[i].correct) correctCount++;
-                else incorrectCount++;
+                if (userAnswers[i] === null) {
+                    unansweredCount++;
+                } else if (userAnswers[i] === shuffledQuestions[i].correct) {
+                    correctCount++;
+                } else {
+                    incorrectCount++;
+                }
             }
 
             const rawScore = correctCount - (incorrectCount / 3);
@@ -646,13 +990,30 @@
             document.getElementById('final-correct').textContent = correctCount;
             document.getElementById('final-incorrect').textContent = incorrectCount;
             document.getElementById('final-unanswered').textContent = unansweredCount;
-            document.getElementById('final-score').textContent = scoreRounded + '/10';
+
+            const scoreElement = document.getElementById('final-score');
+            scoreElement.textContent = scoreRounded + '/10';
+
+            if (scoreRounded >= 8.5) {
+                scoreElement.className = 'score excellent';
+                document.getElementById('score-message').textContent = '¡Excelente trabajo! 🎉 Sobresaliente';
+            } else if (scoreRounded >= 7) {
+                scoreElement.className = 'score excellent';
+                document.getElementById('score-message').textContent = '¡Muy buen trabajo! 🌟 Notable';
+            } else if (scoreRounded >= 5) {
+                scoreElement.className = 'score good';
+                document.getElementById('score-message').textContent = '¡Aprobado! 👍 Sigue repasando';
+            } else {
+                scoreElement.className = 'score poor';
+                document.getElementById('score-message').textContent = 'Necesitas repasar más 📚 Suspenso';
+            }
 
             showFailedQuestions();
         }
 
         function showFailedQuestions() {
             const failedQuestions = [];
+
             for (let i = 0; i < shuffledQuestions.length; i++) {
                 if (userAnswers[i] !== null && userAnswers[i] !== shuffledQuestions[i].correct) {
                     failedQuestions.push({
@@ -665,6 +1026,7 @@
 
             if (failedQuestions.length > 0) {
                 document.getElementById('failed-questions-container').classList.remove('hidden');
+
                 const listContainer = document.getElementById('failed-questions-list');
                 listContainer.innerHTML = failedQuestions.map(failed => `
                     <div class="failed-question">
@@ -679,18 +1041,32 @@
         }
 
         function restartTest() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
             document.getElementById('question-view').classList.remove('hidden');
             document.getElementById('results-view').classList.add('hidden');
             document.getElementById('failed-questions-container').classList.add('hidden');
+
             initializeTest();
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', function () {
             initializeTheme();
-            document.getElementById('prev-btn').onclick = () => { if (currentQuestion > 0) goToQuestion(currentQuestion - 1); };
-            document.getElementById('next-btn').onclick = () => { if (currentQuestion < shuffledQuestions.length - 1) goToQuestion(currentQuestion + 1); else finishExam(); };
-            document.getElementById('finish-btn').onclick = finishExam;
-            initializeTest();
+
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const finishBtn = document.getElementById('finish-btn');
+
+            if (prevBtn) prevBtn.onclick = previousQuestion;
+            if (nextBtn) nextBtn.onclick = nextQuestion;
+            if (finishBtn) finishBtn.onclick = finishExam;
+
+            buildTopicSelect();
+            setTimeout(() => {
+                initializeTest();
+            }, 100);
         });
     </script>
 </body>
